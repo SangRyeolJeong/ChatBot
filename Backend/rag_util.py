@@ -11,7 +11,6 @@ from langchain_core.prompts import PromptTemplate
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from langchain.docstore.document import Document
 
-# ChatGPT 모델 설정
 llm = ChatOpenAI(model_name="gpt-4o-mini", temperature=0)
 os.environ["OPENAI_API_KEY"] = ""
 # Prompt Templates
@@ -149,8 +148,6 @@ $$$
 #Answer:"""
 )
 
-
-# Load PDF File
 def load_pdf_file(base_path, restaurant_name):
     pdf_file_path = os.path.join(base_path, restaurant_name, f"{restaurant_name}.pdf")
     if not os.path.exists(pdf_file_path):
@@ -160,7 +157,6 @@ def load_pdf_file(base_path, restaurant_name):
     docs = loader.load()
     return [doc.page_content.strip() for doc in docs]
 
-# 2. Create Documents and Retriever
 def create_documents(texts):
     return [Document(page_content=text) for text in texts]
 
@@ -172,8 +168,6 @@ def create_retriever(documents):
     vectorstore = FAISS.from_documents(documents=split_docs, embedding=embeddings)
     return vectorstore.as_retriever()
 
-
-# 3. Create Chain
 def create_chain(retriever, prompt):
     llm = ChatOpenAI(model_name="gpt-4o-mini", temperature=0)
     return (
@@ -183,8 +177,6 @@ def create_chain(retriever, prompt):
         | StrOutputParser()
     )
 
-
-# 4. Extract Dish Names
 def extract_dish_names(split_list):
     dish_names = []
     dish_names.append("")
@@ -196,7 +188,6 @@ def extract_dish_names(split_list):
     return dish_names
 
 
-# 5. Display Text and Images
 def display_split_and_image(split_list, dish_names, folder_path):
     results = []
     for i, description in enumerate(split_list):
@@ -209,24 +200,17 @@ def display_split_and_image(split_list, dish_names, folder_path):
 
 
 def process_course_restaurant(base_path, restaurant_name):
-    """
-    Process course-based restaurant details with optional lunch and dinner handling.
-    """
-    # PDF 파일 로드
+
     texts = load_pdf_file(base_path, restaurant_name)
 
-    # 문서 생성
     general_doc = create_documents([texts[0]])
     lunch_doc = create_documents([texts[1]]) if len(texts) > 1 and texts[1].strip() else None
     dinner_doc = create_documents([texts[2]]) if len(texts) > 2 and texts[2].strip() else None
 
-    # General Information
     retriever = create_retriever(general_doc)
     chain_general = create_chain(retriever, prompt_for_general_explain)
     response_general = chain_general.invoke("이 식당에 대한 설명을 알려줘.")
-
-
-    # Dinner Menu 처리
+    
     if dinner_doc:
         retriever = create_retriever(dinner_doc)
         chain_dinner = create_chain(retriever, prompt_for_course_dish)
@@ -239,10 +223,8 @@ def process_course_restaurant(base_path, restaurant_name):
         "dinner": dinner_results
         }
     else:
-        dinner_results = []  # 디너 데이터가 없으면 빈 리스트 반환
+        dinner_results = []  
 
-
-    # Lunch Menu 처리
     if lunch_doc:
         retriever = create_retriever(lunch_doc)
         chain_lunch = create_chain(retriever, prompt_for_course_dish)
@@ -255,39 +237,28 @@ def process_course_restaurant(base_path, restaurant_name):
         "lunch": lunch_results,
         }
     else:
-        lunch_results = []  # 런치 데이터가 없으면 빈 리스트 반환
-
-    # 결과 반환
+        lunch_results = [] 
     return {
         "general_info": response_general,
         "lunch": lunch_results,
         "dinner": dinner_results
     }
 
-
-
 def process_single_restaurant(base_path, restaurant_name):
-    """
-    Process single-menu restaurant details.
-    """
-    # PDF 파일 로드
+
     texts = load_pdf_file(base_path, restaurant_name)
 
-    # 문서 생성
     general_doc = create_documents([texts[0]])
     single_doc = create_documents([texts[1]])
 
-    # General Information
     retriever = create_retriever(general_doc)
     chain_general = create_chain(retriever, prompt_for_general_explain)
     response_general = chain_general.invoke("이 식당에 대한 설명을 알려줘.")
 
-    # Single Menu
     retriever = create_retriever(single_doc)
     chain_single = create_chain(retriever, prompt_for_course_dish)
     response_single = chain_single.invoke("단일 메뉴에 대해 설명해줘.")
 
-    # 데이터 처리
     split_single_list = [segment.strip() for segment in response_single.split("$$$") if segment.strip()]
     single_dish_names = extract_dish_names(split_single_list)
     print(single_dish_names)
