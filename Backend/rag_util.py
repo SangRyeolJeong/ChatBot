@@ -227,7 +227,7 @@ def process_course_restaurant(base_path, restaurant_name):
 
     if lunch_doc:
         retriever = create_retriever(lunch_doc)
-        chain_lunch = create_chain(retriever, prompt_for_course_dish)
+        chain_lunch = create_chain(retriever, prompt_for_dish)
         response_lunch = chain_lunch.invoke("런치 메뉴에 대해 설명해줘.")
         split_lunch_list = [segment.strip() for segment in response_lunch.split("$$$") if segment.strip()]
         lunch_dish_names = extract_dish_names(split_lunch_list)
