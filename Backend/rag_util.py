@@ -13,7 +13,7 @@ from langchain.docstore.document import Document
 
 # ChatGPT 모델 설정
 llm = ChatOpenAI(model_name="gpt-4o-mini", temperature=0)
-os.environ["OPENAI_API_KEY"] = "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"
+os.environ["OPENAI_API_KEY"] = ""
 # Prompt Templates
 prompt_for_general_explain = PromptTemplate.from_template(
     """넌 파인다이닝의 서버야. 손님들에게 식당의 정보를 간결하고 친절하게 설명해줘야 해. 
