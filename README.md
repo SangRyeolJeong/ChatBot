@@ -1,15 +1,15 @@
-디렉토리 구조 \n
-Backend \n
-dataset \n
-public \n
-src \n
+디렉토리 구조 
+Backend 
+dataset 
+public 
+src 
 
 
-cd Backend \n
-venv\Scripts\activate \n
-python app.py \n
-실행한 후 끄지 말고 다른 터미널로 이동한 뒤 \n
-npm start \n
+cd Backend 
+venv\Scripts\activate 
+python app.py 
+실행한 후 끄지 말고 다른 터미널로 이동한 뒤 
+npm start 
 
 
 
