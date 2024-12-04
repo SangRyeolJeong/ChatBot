@@ -24,6 +24,8 @@ python app.py
 
 실행한 후 끄지 말고 다른 터미널로 이동한 뒤 
 
+npm install
+
 npm start 
 
 
