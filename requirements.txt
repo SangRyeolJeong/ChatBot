@@ -8,3 +8,4 @@ langchain
 faiss-cpu
 ipython
 langchain-community
+python-docx
