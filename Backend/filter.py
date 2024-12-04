@@ -6,7 +6,6 @@ os.environ["OPENAI_API_KEY"] = ""
 
 client = OpenAI()
 
-# OpenAI를 활용한 사용자 입력 파싱
 def parse_query_with_openai(prompt):
     """
     OpenAI를 사용하여 프롬프트를 파싱하고 구조화된 데이터를 반환하는 함수.
@@ -61,7 +60,6 @@ def parse_response_to_dict(response_text):
 
     response_dict = {}
     for _, key, value in matches:
-        # 바로 위치 뽑아냈는지, 아니면 가까운 위치로 뽑아냈는지 여부
         if key.strip() == "위치" and "(closest to" in value:
             location, closest = value.split("(closest to", 1)
             response_dict[key.strip()] = location.strip()
@@ -128,7 +126,6 @@ def filter_restaurants(df, query):
             return matched_restaurant, message  # 이전 상태 반환
         matched_restaurant = filtered_restaurant
 
-    # Return final filtered results
     message = "모든 조건에 맞는 결과를 보여드립니다."
     return matched_restaurant, message
 
@@ -142,14 +139,14 @@ import random
 def filter_course_restaurants(df, query):
     query_price = int(query["가격"]) if query["가격"] != "-" else None
     message = ""
-    matched_restaurant = df[df["코스여부"] == "O"]  # 초기 상태는 코스 식당만 필터링
+    matched_restaurant = df[df["코스여부"] == "O"] 
 
     # Step 1: Filter by 테마
     if query["음식의 테마"] != "-":
         filtered_restaurant = matched_restaurant[matched_restaurant["테마"] == query["음식의 테마"]]
         if filtered_restaurant.empty:
             message = "테마 조건에 맞는 코스요리 식당이 없어 다른 식당을 추천드립니다."
-            return matched_restaurant, message  # 테마 조건을 적용하지 않음
+            return matched_restaurant, message  
         if len(filtered_restaurant) <= 3:
             message = "테마 조건에 맞는 코스요리 식당을 추천해드립니다."
             return filtered_restaurant, message
@@ -165,7 +162,7 @@ def filter_course_restaurants(df, query):
         ]
         if len(filtered_restaurant) <= 3:
             message = "테마 조건에 맞는 코스요리 식당을 추천해드립니다."
-            return matched_restaurant, message  # 이전 상태 반환
+            return matched_restaurant, message 
         matched_restaurant = filtered_restaurant
 
     # Step 3: Filter by 가격
@@ -178,7 +175,7 @@ def filter_course_restaurants(df, query):
         ]
         if len(filtered_restaurant) <= 3:
             message = "테마, 재료 조건에 맞는 코스요리 식당을 추천해드립니다."
-            return matched_restaurant, message  # 이전 상태 반환
+            return matched_restaurant, message  
         matched_restaurant = filtered_restaurant
 
     # Step 4: Filter by 위치
@@ -186,10 +183,9 @@ def filter_course_restaurants(df, query):
         filtered_restaurant = matched_restaurant[matched_restaurant["위치"] == query["위치"]]
         if len(filtered_restaurant) <= 3:
             message = "테마, 재료, 가격 조건에 맞는 코스요리 식당을 추천해드립니다."
-            return matched_restaurant, message  # 이전 상태 반환
+            return matched_restaurant, message 
         matched_restaurant = filtered_restaurant
 
-    # Return final filtered results
     message = "모든 조건에 맞는 코스요리 결과를 보여드립니다."
     return matched_restaurant, message
 
@@ -205,15 +201,12 @@ def select_top_and_random(matched_restaurant, message):
     Also returns the remaining restaurants not selected.
     """
     if len(matched_restaurant) <= 3:
-        return matched_restaurant, pd.DataFrame() # 남아있는 것 없음
+        return matched_restaurant, pd.DataFrame() 
 
-    # Convert 평점 to numeric
     matched_restaurant["평점"] = pd.to_numeric(matched_restaurant["평점"], errors="coerce")
 
-    # Select top 2 by 평점
     top_rated = matched_restaurant.nlargest(2, "평점")
 
-    # Select 1 랜덤하게 하나
     remaining = matched_restaurant.drop(top_rated.index)
     random_choice = remaining.sample(1) if not remaining.empty else pd.DataFrame()
 
