@@ -84,7 +84,7 @@ df.head()
 def filter_restaurants(df, query):
     query_price = int(query["가격"]) if query["가격"] != "-" else None
     message = ""
-    matched_restaurant = df  # 초기 상태는 전체 데이터프레임
+    matched_restaurant = df[df["코스여부"] == "X"] 
 
     # Step 1: Filter by 테마
     if query["음식의 테마"] != "-":
