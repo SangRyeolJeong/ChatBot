@@ -344,7 +344,7 @@ function ChatScreen({ onBack }) {
         }, 0); // 첫 메시지는 즉시 출력
 
         // 메뉴 메시지 출력
-        let delay = 10000; // 첫 메시지 이후의 딜레이 시작점 (10초)
+        let delay = 3000; // 첫 메시지 이후의 딜레이 시작점 (10초)
         ['single', 'lunch', 'dinner'].forEach((menuType) => {
           if (data[menuType]) {
             data[menuType].forEach((item) => {
@@ -380,7 +380,7 @@ function ChatScreen({ onBack }) {
                   },
                 ]);
               }, delay);
-              delay += 10000; // 다음 메시지를 위해 딜레이 증가
+              delay += 7000; // 다음 메시지를 위해 딜레이 증가
             });
           }
         });
