@@ -9,6 +9,8 @@ public
 src 
 
 
+터미널 실행 순서
+
 
 cd Backend 
 
