@@ -9,7 +9,7 @@
   word-break: break-all;
   overflow-wrap: break-word;
   white-space: pre-wrap;
-  max-height: 100%; /* 스크롤 영역 제한 */
+  max-height: 100%;
 }
 
 .chat-input-container {
@@ -124,15 +124,15 @@
 .response-buttons-inline {
   display: flex;
   justify-content: center;
-  gap: 20px; /* 버튼 간 간격 */
+  gap: 20px;
   margin-top: 15px;
 }
 
 .response-buttons-inline button {
-  padding: 10px 20px; /* 버튼 안쪽 여백 */
-  font-size: 1em; /* 폰트 크기 */
+  padding: 10px 20px;
+  font-size: 1em;
   border: none;
-  border-radius: 10px; /* 둥근 모서리 */
+  border-radius: 10px;
   cursor: pointer;
   background-color: #a38671;
   color: white;
@@ -140,21 +140,21 @@
 }
 
 .response-buttons-inline .yes-button {
-  background-color: #8cb369; /* Yes 버튼 색상 */
+  background-color: #8cb369;
 }
 
 .response-buttons-inline .yes-button:hover {
-  background-color: #769c57; /* Yes 버튼 호버 색상 */
-  transform: scale(1.05); /* 살짝 커지는 효과 */
+  background-color: #769c57;
+  transform: scale(1.05);
 }
 
 .response-buttons-inline .no-button {
-  background-color: #c75d5d; /* No 버튼 색상 */
+  background-color: #c75d5d;
 }
 
 .response-buttons-inline .no-button:hover {
-  background-color: #a74c4c; /* No 버튼 호버 색상 */
-  transform: scale(1.05); /* 살짝 커지는 효과 */
+  background-color: #a74c4c;
+  transform: scale(1.05);
 }
 
 .chat-messages img {
@@ -174,7 +174,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000; /* 가장 위에 표시 */
+  z-index: 1000;
 }
 
 .loading-gif {
@@ -184,8 +184,8 @@
 
 /* 메시지 흐림 효과 */
 .screen.chat-screen {
-  filter: blur(2px); /* 메시지 흐림 효과 */
-  pointer-events: none; /* 클릭 비활성화 */
+  filter: blur(2px);
+  pointer-events: none;
 }
 
 .screen.chat-screen:not(.loading-overlay) {

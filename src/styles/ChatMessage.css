@@ -13,14 +13,14 @@
 
 .bot {
   align-self: flex-start;
-  flex-direction: row; /* 기존 유지 */
-  align-items: flex-start; /* 프로필 이미지를 상단 정렬 */
+  flex-direction: row;
+  align-items: flex-start;
 }
 
 .user {
   align-self: flex-end;
   flex-direction: row-reverse;
-  align-items: flex-end; /* 유저 메시지 상단 정렬 */
+  align-items: flex-end;
 }
 
 .profile-image {
@@ -29,7 +29,7 @@
   border-radius: 50%;
   margin-right: 10px;
   border: 2px solid #ccc;
-  align-self: flex-start; /* 이미지 상단 정렬 */
+  align-self: flex-start;
 }
 
 .message-bubble {
@@ -40,7 +40,7 @@
   white-space: pre-wrap;
   max-width: 100%;
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-  background-color: #e4ded4; /* 기본 배경 */
+  background-color: #e4ded4;
   color: #333;
   border-top-left-radius: 0;
 }
@@ -50,10 +50,10 @@
 }
 
 .user .message-bubble {
-  background-color: #8e705d; /* 유저 메시지 배경 */
+  background-color: #8e705d;
   color: white;
-  border-top-right-radius: 0; /* 기존 유지 */
-  border-top-left-radius: 15px; /* 좌측 상단 둥글게 */
+  border-top-right-radius: 0;
+  border-top-left-radius: 15px;
 }
 
 .bot .message-bubble {
