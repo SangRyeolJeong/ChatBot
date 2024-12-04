@@ -9,3 +9,4 @@ faiss-cpu
 ipython
 langchain-community
 python-docx
+langchain-openai
