@@ -6,7 +6,7 @@ function ChatMessage({ isUser, message }) {
   const [displayedText, setDisplayedText] = useState(isUser ? message : '');
 
   useEffect(() => {
-    setDisplayedText(message); // 메시지는 한 번에 렌더링
+    setDisplayedText(message);
   }, [message]);
 
   return (

@@ -25,7 +25,7 @@ function ChatScreen({ onBack }) {
   const [isCourse, setIsCourse] = useState(null);
   const [restaurantOptions, setRestaurantOptions] = useState([]);
   const [previousRecommendations, setPreviousRecommendations] = useState([]);
-  const [selectedRestaurantName, setSelectedRestaurantName] = useState(''); // 선택한 식당 이름 저장
+  const [selectedRestaurantName, setSelectedRestaurantName] = useState('');
   const [restaurantDetails, setRestaurantDetails] = useState(null);
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef(null);
@@ -41,7 +41,6 @@ function ChatScreen({ onBack }) {
         ]);
         index++;
 
-        // 메시지가 끝난 후 다음 메시지 표시 (지연시간 추가)
         if (index < initialMessages.length) {
           setTimeout(displayNextMessage, 300);
         }
@@ -54,12 +53,11 @@ function ChatScreen({ onBack }) {
   }, []);
 
   useEffect(() => {
-    // DOM 업데이트 후 스크롤을 이동시키기 위해 setTimeout 사용
     const timeout = setTimeout(() => {
       messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }, 0); // 짧은 지연시간
+    }, 0);
 
-    return () => clearTimeout(timeout); // 컴포넌트가 언마운트되면 타이머를 정리
+    return () => clearTimeout(timeout);
   }, [messages]);
 
   const fetchRestaurants = async (userInput) => {
@@ -106,49 +104,8 @@ function ChatScreen({ onBack }) {
     }
   };
 
-  const fetchRestaurantDetails = async (restaurantName) => {
-    try {
-      const response = await fetch('http://localhost:5000/get_restaurant_rag', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ restaurant_name: restaurantName }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`서버 응답 오류: ${response.status}`);
-      }
-
-      const data = await response.json();
-      return data;
-    } catch (error) {
-      console.error('식당 정보 가져오기 실패:', error);
-      return null;
-    }
-  };
-
-  const fetchRAGData = async (restaurantName) => {
-    try {
-      const response = await fetch('http://localhost:5000/get_restaurant_rag', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ restaurant_name: restaurantName }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`Failed to fetch: ${response.status}`);
-      }
-
-      return await response.json(); // Return fetched data
-    } catch (error) {
-      console.error('Failed to fetch RAG data:', error);
-      throw error;
-    }
-  };
-
   const fetchAlternativeRestaurants = async () => {
-    console.log('이전 추천:', previousRecommendations); // 이전 추천 확인
+    console.log('이전 추천:', previousRecommendations);
     try {
       const response = await fetch(
         'http://localhost:5000/alternative_restaurants',
@@ -168,11 +125,11 @@ function ChatScreen({ onBack }) {
       }
 
       const data = await response.json();
-      console.log('서버 응답 데이터:', data); // 응답 데이터 확인
+      console.log('서버 응답 데이터:', data);
 
       if (data.results) {
-        setPreviousRecommendations(data.results); // 이전 추천 갱신
-        setRestaurantOptions(data.results); // 새로운 식당 옵션 설정
+        setPreviousRecommendations(data.results);
+        setRestaurantOptions(data.results);
         const restaurants = data.results
           .map(
             (restaurant, idx) =>
@@ -220,9 +177,9 @@ function ChatScreen({ onBack }) {
   };
 
   const handleRestaurantClick = async (restaurant) => {
-    console.log('Selected Restaurant:', restaurant.이름); // Debugging
-    setRestaurantDetails(restaurant); // 선택한 식당 정보 저장
-    setSelectedRestaurantName(restaurant.이름); // 선택한 식당 이름 저장
+    console.log('Selected Restaurant:', restaurant.이름);
+    setRestaurantDetails(restaurant);
+    setSelectedRestaurantName(restaurant.이름);
 
     try {
       const response = await fetch(
@@ -319,7 +276,7 @@ function ChatScreen({ onBack }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           restaurant_name: restaurantName,
-          is_course: isCourse, // 코스 여부 전달
+          is_course: isCourse,
         }),
       });
 
@@ -331,7 +288,6 @@ function ChatScreen({ onBack }) {
       const { general_info, single, lunch, dinner } = data;
 
       if (data) {
-        // `general_info` 메시지 출력 후 10초 대기
         setLoading(false);
         setTimeout(() => {
           setMessages((prev) => [
@@ -341,10 +297,9 @@ function ChatScreen({ onBack }) {
               text: <div>{convertSpecificLinkToHyperlink(general_info)}</div>,
             },
           ]);
-        }, 0); // 첫 메시지는 즉시 출력
+        }, 0);
 
-        // 메뉴 메시지 출력
-        let delay = 3000; // 첫 메시지 이후의 딜레이 시작점 (10초)
+        let delay = 3000;
         ['single', 'lunch', 'dinner'].forEach((menuType) => {
           if (data[menuType]) {
             data[menuType].forEach((item) => {
@@ -369,8 +324,8 @@ function ChatScreen({ onBack }) {
                             src={imagePath}
                             alt='Dish'
                             style={{
-                              width: '100%', // 메시지 박스 너비에 맞게 조정
-                              height: 'auto', // 비율 유지
+                              width: '100%',
+                              height: 'auto',
                               margin: '10px 0',
                             }}
                           />
@@ -380,7 +335,7 @@ function ChatScreen({ onBack }) {
                   },
                 ]);
               }, delay);
-              delay += 7000; // 다음 메시지를 위해 딜레이 증가
+              delay += 7000;
             });
           }
         });
@@ -400,7 +355,7 @@ function ChatScreen({ onBack }) {
 
   const handleCourseSelection = (isCourse) => {
     console.log('코스 여부 선택됨:', isCourse ? '코스 요리' : '단일 메뉴');
-    setIsCourse(isCourse); // isCourse 상태 저장
+    setIsCourse(isCourse);
     setMessages((prev) => [
       ...prev,
       {
@@ -413,7 +368,7 @@ function ChatScreen({ onBack }) {
   };
 
   const convertSpecificLinkToHyperlink = (text) => {
-    const urlRegex = /(https?:\/\/[^\s]+)/g; // URL 패턴
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
     return text.split(urlRegex).map((part, index) => {
       if (part.startsWith('https')) {
         return (
@@ -428,7 +383,7 @@ function ChatScreen({ onBack }) {
           </a>
         );
       }
-      return part.replace(/\(|\)/g, ''); // 불필요한 괄호 제거
+      return part.replace(/\(|\)/g, '');
     });
   };
 
