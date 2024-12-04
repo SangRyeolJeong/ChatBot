@@ -1,6 +1,8 @@
 from openai import OpenAI
 
 import os
+import pandas as pd
+import random
 
 os.environ["OPENAI_API_KEY"] = ""
 
@@ -60,6 +62,7 @@ def parse_response_to_dict(response_text):
 
     response_dict = {}
     for _, key, value in matches:
+        # 바로 위치 뽑아냈는지, 아니면 가까운 위치로 뽑아냈는지 여부
         if key.strip() == "위치" and "(closest to" in value:
             location, closest = value.split("(closest to", 1)
             response_dict[key.strip()] = location.strip()
@@ -84,30 +87,31 @@ df.head()
 def filter_restaurants(df, query):
     query_price = int(query["가격"]) if query["가격"] != "-" else None
     message = ""
-    matched_restaurant = df[df["코스여부"] == "X"] 
+    matched_restaurant = df[df["코스여부"] == "X"]  
 
-    # Step 1: Filter by 테마
     if query["음식의 테마"] != "-":
         filtered_restaurant = matched_restaurant[matched_restaurant["테마"] == query["음식의 테마"]]
-        if filtered_restaurant.empty:
+        if filtered_restaurant.empty: 
+            filtered_restaurant = matched_restaurant[matched_restaurant["간략한 소개"].str.contains(query["음식의 테마"], na=False)]
+
+        if len(filtered_restaurant) == 0:
             message = "테마 조건에 맞는 식당이 없어 다른 식당을 추천드립니다."
             return matched_restaurant, message  # 테마 조건을 적용하지 않음
+        
         if len(filtered_restaurant) <= 3:
             message = "테마 조건에 맞는 식당을 추천해드립니다."
             return filtered_restaurant, message
         matched_restaurant = filtered_restaurant
 
-    # Step 2: Filter out 제외되어야하는 재료
     if query["제외되어야하는 재료"] != "-":
         filtered_restaurant = matched_restaurant[
             ~matched_restaurant["주재료"].str.contains(query["제외되어야하는 재료"], na=False)
         ]
         if len(filtered_restaurant) <= 3:
             message = "테마 조건에 맞는 식당을 추천해드립니다."
-            return matched_restaurant, message  # 이전 상태 반환
+            return matched_restaurant, message  
         matched_restaurant = filtered_restaurant
 
-    # Step 3: Filter by 가격
     if query_price is not None:
         matched_restaurant["가격"] = pd.to_numeric(matched_restaurant["가격"], errors="coerce")
         filtered_restaurant = matched_restaurant[
@@ -115,44 +119,38 @@ def filter_restaurants(df, query):
         ]
         if len(filtered_restaurant) <= 3:
             message = "테마, 재료 조건에 맞는 식당을 추천해드립니다."
-            return matched_restaurant, message  # 이전 상태 반환
+            return matched_restaurant, message  
         matched_restaurant = filtered_restaurant
 
-    # Step 4: Filter by 위치
     if query["위치"] != "-":
         filtered_restaurant = matched_restaurant[matched_restaurant["위치"] == query["위치"]]
         if len(filtered_restaurant) <= 3:
             message = "테마, 재료, 가격 조건에 맞는 식당을 추천해드립니다."
-            return matched_restaurant, message  # 이전 상태 반환
+            return matched_restaurant, message  
         matched_restaurant = filtered_restaurant
 
     message = "모든 조건에 맞는 결과를 보여드립니다."
     return matched_restaurant, message
 
-
-
-
-
-import pandas as pd
-import random
-
 def filter_course_restaurants(df, query):
     query_price = int(query["가격"]) if query["가격"] != "-" else None
     message = ""
-    matched_restaurant = df[df["코스여부"] == "O"] 
+    matched_restaurant = df[df["코스여부"] == "O"]  
 
-    # Step 1: Filter by 테마
     if query["음식의 테마"] != "-":
         filtered_restaurant = matched_restaurant[matched_restaurant["테마"] == query["음식의 테마"]]
-        if filtered_restaurant.empty:
-            message = "테마 조건에 맞는 코스요리 식당이 없어 다른 식당을 추천드립니다."
-            return matched_restaurant, message  
+        if filtered_restaurant.empty: 
+            filtered_restaurant = matched_restaurant[matched_restaurant["간략한 소개"].str.contains(query["음식의 테마"], na=False)]
+
+        if len(filtered_restaurant) == 0:
+            message = "테마 조건에 맞는 식당이 없어 다른 식당을 추천드립니다."
+            return matched_restaurant, message  # 테마 조건을 적용하지 않음
+        
         if len(filtered_restaurant) <= 3:
-            message = "테마 조건에 맞는 코스요리 식당을 추천해드립니다."
+            message = "테마 조건에 맞는 식당을 추천해드립니다."
             return filtered_restaurant, message
         matched_restaurant = filtered_restaurant
 
-    # Step 2: Filter out 제외되어야하는 재료
     if query["제외되어야하는 재료"] != "-":
         filtered_restaurant = matched_restaurant[
             ~(
@@ -162,10 +160,9 @@ def filter_course_restaurants(df, query):
         ]
         if len(filtered_restaurant) <= 3:
             message = "테마 조건에 맞는 코스요리 식당을 추천해드립니다."
-            return matched_restaurant, message 
+            return matched_restaurant, message  
         matched_restaurant = filtered_restaurant
 
-    # Step 3: Filter by 가격
     if query_price is not None:
         matched_restaurant["런치가격"] = pd.to_numeric(matched_restaurant["런치가격"], errors="coerce")
         matched_restaurant["디너가격"] = pd.to_numeric(matched_restaurant["디너가격"], errors="coerce")
@@ -175,15 +172,14 @@ def filter_course_restaurants(df, query):
         ]
         if len(filtered_restaurant) <= 3:
             message = "테마, 재료 조건에 맞는 코스요리 식당을 추천해드립니다."
-            return matched_restaurant, message  
+            return matched_restaurant, message 
         matched_restaurant = filtered_restaurant
 
-    # Step 4: Filter by 위치
     if query["위치"] != "-":
         filtered_restaurant = matched_restaurant[matched_restaurant["위치"] == query["위치"]]
         if len(filtered_restaurant) <= 3:
             message = "테마, 재료, 가격 조건에 맞는 코스요리 식당을 추천해드립니다."
-            return matched_restaurant, message 
+            return matched_restaurant, message  
         matched_restaurant = filtered_restaurant
 
     message = "모든 조건에 맞는 코스요리 결과를 보여드립니다."
@@ -218,17 +214,9 @@ def select_top_and_random(matched_restaurant, message):
 
 
 def get_restaurant_names(final_results):
-    """
-    Extracts the names of restaurants from the final results.
-    Returns a list of names.
-    """
     return final_results["이름"].tolist()
 
 def format_restaurant_details_indexed(final_results):
-    """
-    Formats the restaurant details in a user-friendly way with sequential index-based access.
-    Returns a list of formatted details for each restaurant.
-    """
     details_list = []
 
     for _, restaurant in final_results.iterrows():
