@@ -1,10 +1,15 @@
-.chat-messages {
+.chat-messages-container {
   flex: 1;
   overflow-y: auto;
   padding: 15px;
   display: flex;
   flex-direction: column;
   gap: 10px;
+  word-wrap: break-word;
+  word-break: break-all;
+  overflow-wrap: break-word;
+  white-space: pre-wrap;
+  max-height: 100%; /* 스크롤 영역 제한 */
 }
 
 .chat-input-container {
@@ -49,25 +54,141 @@
   margin: 0;
 }
 
-.chat-messages::-webkit-scrollbar {
+/* 스크롤바 스타일 */
+.chat-messages-container::-webkit-scrollbar {
   width: 8px;
 }
 
-.chat-messages::-webkit-scrollbar-track {
+.chat-messages-container::-webkit-scrollbar-track {
   background: #f2e7db;
   border-radius: 10px;
 }
 
-.chat-messages::-webkit-scrollbar-thumb {
+.chat-messages-container::-webkit-scrollbar-thumb {
   background: linear-gradient(180deg, #a38671, #8e705d);
   border-radius: 10px;
   border: 2px solid #f2e7db;
 }
 
-.chat-messages::-webkit-scrollbar-thumb:hover {
+.chat-messages-container::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(180deg, #8e705d, #a38671);
 }
 
-.chat-messages::-webkit-scrollbar-thumb:active {
+.chat-messages-container::-webkit-scrollbar-thumb:active {
   background: #8e705d;
+}
+
+.restaurant-buttons {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 10px;
+}
+
+.restaurant-button {
+  padding: 10px 20px;
+  background-color: #a38671;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1em;
+  transition: background-color 0.3s;
+}
+
+.restaurant-button:hover {
+  background-color: #8e705d;
+}
+/* 코스 요리 선택 버튼 */
+.course-selection {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  padding: 15px;
+}
+
+.course-selection button {
+  background-color: #a38671;
+  color: white;
+  padding: 10px 20px;
+  font-size: 1em;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.course-selection button:hover {
+  background-color: #8e705d;
+}
+
+.response-buttons-inline {
+  display: flex;
+  justify-content: center;
+  gap: 20px; /* 버튼 간 간격 */
+  margin-top: 15px;
+}
+
+.response-buttons-inline button {
+  padding: 10px 20px; /* 버튼 안쪽 여백 */
+  font-size: 1em; /* 폰트 크기 */
+  border: none;
+  border-radius: 10px; /* 둥근 모서리 */
+  cursor: pointer;
+  background-color: #a38671;
+  color: white;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.response-buttons-inline .yes-button {
+  background-color: #8cb369; /* Yes 버튼 색상 */
+}
+
+.response-buttons-inline .yes-button:hover {
+  background-color: #769c57; /* Yes 버튼 호버 색상 */
+  transform: scale(1.05); /* 살짝 커지는 효과 */
+}
+
+.response-buttons-inline .no-button {
+  background-color: #c75d5d; /* No 버튼 색상 */
+}
+
+.response-buttons-inline .no-button:hover {
+  background-color: #a74c4c; /* No 버튼 호버 색상 */
+  transform: scale(1.05); /* 살짝 커지는 효과 */
+}
+
+.chat-messages img {
+  display: block;
+  margin: auto;
+  max-width: 100%;
+  height: auto;
+}
+/* 로딩 오버레이 */
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.8); /* 흐림 효과 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* 가장 위에 표시 */
+}
+
+.loading-gif {
+  width: 150px;
+  height: 150px;
+}
+
+/* 메시지 흐림 효과 */
+.screen.chat-screen {
+  filter: blur(2px); /* 메시지 흐림 효과 */
+  pointer-events: none; /* 클릭 비활성화 */
+}
+
+.screen.chat-screen:not(.loading-overlay) {
+  filter: none;
+  pointer-events: auto;
 }

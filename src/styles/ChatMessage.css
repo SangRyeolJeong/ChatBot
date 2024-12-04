@@ -1,20 +1,26 @@
 .chat-message {
   display: flex;
-  align-items: flex-start;
+  align-items: flex-start; /* 상단 정렬 */
   margin-bottom: 15px;
   max-width: 70%;
   animation: fadeIn 0.3s ease;
 }
 
-.user {
-  align-self: flex-end;
-  flex-direction: row-reverse;
-  margin-left: auto;
+.profile-container {
+  display: flex;
+  align-items: flex-start;
 }
 
 .bot {
   align-self: flex-start;
-  flex-direction: row;
+  flex-direction: row; /* 기존 유지 */
+  align-items: flex-start; /* 프로필 이미지를 상단 정렬 */
+}
+
+.user {
+  align-self: flex-end;
+  flex-direction: row-reverse;
+  align-items: flex-end; /* 유저 메시지 상단 정렬 */
 }
 
 .profile-image {
@@ -23,6 +29,7 @@
   border-radius: 50%;
   margin-right: 10px;
   border: 2px solid #ccc;
+  align-self: flex-start; /* 이미지 상단 정렬 */
 }
 
 .message-bubble {
@@ -32,8 +39,10 @@
   line-height: 1.4;
   white-space: pre-wrap;
   max-width: 100%;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* 그림자 추가 */
-  transition: transform 0.2s;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: #e4ded4; /* 기본 배경 */
+  color: #333;
+  border-top-left-radius: 0;
 }
 
 .message-bubble:hover {
@@ -41,9 +50,10 @@
 }
 
 .user .message-bubble {
-  background-color: #8e705d;
+  background-color: #8e705d; /* 유저 메시지 배경 */
   color: white;
-  border-top-right-radius: 0;
+  border-top-right-radius: 0; /* 기존 유지 */
+  border-top-left-radius: 15px; /* 좌측 상단 둥글게 */
 }
 
 .bot .message-bubble {

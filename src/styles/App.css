@@ -34,7 +34,7 @@
 
 .screen {
   width: 100%;
-  max-width: 400px;
+  max-width: 600px; /* 기존 400px에서 600px로 확장 */
   height: 90vh;
   background-color: #f2e7db;
   border-radius: 20px;
