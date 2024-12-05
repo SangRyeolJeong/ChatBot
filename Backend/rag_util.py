@@ -11,9 +11,10 @@ from langchain_core.prompts import PromptTemplate
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from langchain.docstore.document import Document
 
+
 llm = ChatOpenAI(model_name="gpt-4o-mini", temperature=0)
 os.environ["OPENAI_API_KEY"] = ""
-# Prompt Templates
+
 prompt_for_general_explain = PromptTemplate.from_template(
     """넌 파인다이닝의 서버야. 손님들에게 식당의 정보를 간결하고 친절하게 설명해줘야 해. 
 손님이 궁금해할 수 있는 점들을 빠뜨리지 않도록 해야 하지만, 너무 길게 말하지 말고 명확하게 전달해야 해.
@@ -55,6 +56,7 @@ prompt_for_course_dish = PromptTemplate.from_template(
 3. 다음 디쉬들은 "다음 디쉬 준비해드리겠습니다."로 연결합니다.
 4. 마지막 디쉬는 "마지막 디쉬입니다."로 소개합니다. 꼭 마지막에만 해야해요.
 5. 각각의 디쉬 설명은 다음 형식을 따릅니다:
+   - 각 pdf는, [디쉬 이름] : [디쉬 설명]의 형식이야. 너는 : 전에 있는 디쉬 이름을 가져와야해.
    - 디쉬 이름: [디쉬 이름]
    - 디쉬 설명: 요리의 주요 재료, 맛, 특징, 요리사가 의도한 메시지를 포함하여 디테일하게 작성합니다.
 6. 디쉬 설명 사이에는 반드시 "$$$"를 넣어 구분합니다.
@@ -93,6 +95,7 @@ $$$
 #Answer:"""
 )
 
+
 prompt_for_dish = PromptTemplate.from_template(
     """ 안녕하세요. 당신은 손님들께 식당의 메뉴에 대해 자세히 안내해드리는 역할을 맡고 있는, 자랑스러운 우리의 에이스 봇입니다.
 손님들이 식사를 기대하며 즐길 수 있도록, 각각의 요리에 대해 친절하고 디테일하게 설명해주세요.
@@ -103,7 +106,8 @@ prompt_for_dish = PromptTemplate.from_template(
 2. 첫 번째 메뉴를 "첫 번째 메뉴부터 소개해드리겠습니다."로 소개합니다.
 3. 다음 메뉴들은 "다음 메뉴 소개해드리겠습니다."로 연결합니다.
 4. 마지막 메뉴는 "마지막 메뉴입니다."로 소개합니다. 꼭 마지막에만 해야해요.
-5. 각각의 디쉬 설명은 다음 형식을 따릅니다:
+5. 각각의 메뉴 설명은 다음 형식을 따릅니다:
+   - 각 pdf는, [메뉴 이름] : [메뉴 설명]의 형식이야. 너는 : 전에 있는 메뉴 이름을 가져와야해.
    - 메뉴 이름: [메뉴 이름]
    - 메뉴 설명: 요리의 주요 재료, 맛, 특징, 요리사가 의도한 메시지를 포함하여 디테일하게 작성합니다.
 6. 메뉴 설명 사이에는 반드시 "$$$"를 넣어 구분합니다.
@@ -157,9 +161,9 @@ def load_pdf_file(base_path, restaurant_name):
     docs = loader.load()
     return [doc.page_content.strip() for doc in docs]
 
+
 def create_documents(texts):
     return [Document(page_content=text) for text in texts]
-
 
 def create_retriever(documents):
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=50)
@@ -187,7 +191,6 @@ def extract_dish_names(split_list):
             dish_names.append(dish_name)
     return dish_names
 
-
 def display_split_and_image(split_list, dish_names, folder_path):
     results = []
     for i, description in enumerate(split_list):
@@ -210,7 +213,7 @@ def process_course_restaurant(base_path, restaurant_name):
     retriever = create_retriever(general_doc)
     chain_general = create_chain(retriever, prompt_for_general_explain)
     response_general = chain_general.invoke("이 식당에 대한 설명을 알려줘.")
-    
+
     if dinner_doc:
         retriever = create_retriever(dinner_doc)
         chain_dinner = create_chain(retriever, prompt_for_course_dish)
@@ -227,7 +230,7 @@ def process_course_restaurant(base_path, restaurant_name):
 
     if lunch_doc:
         retriever = create_retriever(lunch_doc)
-        chain_lunch = create_chain(retriever, prompt_for_dish)
+        chain_lunch = create_chain(retriever, prompt_for_course_dish)
         response_lunch = chain_lunch.invoke("런치 메뉴에 대해 설명해줘.")
         split_lunch_list = [segment.strip() for segment in response_lunch.split("$$$") if segment.strip()]
         lunch_dish_names = extract_dish_names(split_lunch_list)
@@ -238,11 +241,14 @@ def process_course_restaurant(base_path, restaurant_name):
         }
     else:
         lunch_results = [] 
+
     return {
         "general_info": response_general,
         "lunch": lunch_results,
         "dinner": dinner_results
     }
+
+
 
 def process_single_restaurant(base_path, restaurant_name):
 
@@ -256,7 +262,7 @@ def process_single_restaurant(base_path, restaurant_name):
     response_general = chain_general.invoke("이 식당에 대한 설명을 알려줘.")
 
     retriever = create_retriever(single_doc)
-    chain_single = create_chain(retriever, prompt_for_course_dish)
+    chain_single = create_chain(retriever, prompt_for_dish)
     response_single = chain_single.invoke("단일 메뉴에 대해 설명해줘.")
 
     split_single_list = [segment.strip() for segment in response_single.split("$$$") if segment.strip()]
